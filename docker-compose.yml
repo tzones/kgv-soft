@@ -1,0 +1,44 @@
+
+---
+
+### 2.3 `docker-compose.yml`
+
+```yaml
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: kleingarten
+      POSTGRES_USER: kleingarten
+      POSTGRES_PASSWORD: kleingarten
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://kleingarten:kleingarten@db:5432/kleingarten
+      SMTP_HOST:
+      SMTP_PORT: 587
+      SMTP_USER:
+      SMTP_PASS:
+      SMTP_FROM:
+      SECRET_KEY: "BITTE_DURCH_EINEN_LANGEN_GEHEIMEN_STRING_ERSETZEN"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  db_data:
